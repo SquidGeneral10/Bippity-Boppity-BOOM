@@ -2,17 +2,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 #endregion
 
 public class ThirdPersonCharacter : MonoBehaviour
 {
     private CharacterController controller;
 
+    private GUIStyle style;
+
     [SerializeField] private Transform cam;
 
     private float speed = 5f; // The speed at which the player moves.
     private float rotationSmooth = 0.1f; // Makes turning a bit more smooth.
     private float turnSmoothVelocity;
+    private int knowledge; // knowledge will determine the recipes you can understand and is increased by finding collectibles.
 
     #region Jumping variables
     private float gravity = 15f; // The speed at which you fall back to the ground.
@@ -23,12 +27,20 @@ public class ThirdPersonCharacter : MonoBehaviour
     void Start() // Start is called before the first frame update
     {
         controller = GetComponent<CharacterController>();
+
+        InitialiseGUIStyle();
     }
 
     void Update() // Update is called once per frame
     {
         Jump();
         Movement();
+    }
+
+    void InitialiseGUIStyle()
+    {
+        style = new GUIStyle();
+        style.normal.textColor = Color.black;
     }
 
     void Jump()
@@ -64,9 +76,25 @@ public class ThirdPersonCharacter : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Book"))
+        {
+            SingletonManager.Instance.Knowledge += 1;
+            print(knowledge);
+            Destroy(other.gameObject);
+        }
+    }
+
     bool IsGrounded() // Will be responsible for making sure the player is on the ground before they can jump.
     {
         Ray ray = new Ray(new Vector3(controller.bounds.center.x, (controller.bounds.center.y - controller.bounds.extents.y), controller.bounds.center.z), Vector3.down);
-        return Physics.Raycast(ray, 0.15f);
+        return Physics.Raycast(ray, 0.5f);
+    }
+
+    private void OnGUI() // This will be deleted for a proper UI eventually.
+    {
+        GUI.Label(new Rect(10, 10, 200, 20), "Current Level: " + SceneManager.GetActiveScene().name);
+        GUI.Label(new Rect(10, 30, 200, 20), "Knowledge: " + SingletonManager.Instance.Knowledge, style);
     }
 }
