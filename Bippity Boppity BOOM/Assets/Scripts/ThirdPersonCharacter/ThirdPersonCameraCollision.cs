@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class ThirdPersonCameraCollision : MonoBehaviour
 {
-    private float minDist = 1f; // The minimum distance away from the player that the camera can be.
-    private float maxDist = 3f; // The furthest away from the player that the camera can be.
+    private float minDist = -1f; // The minimum distance away from the player that the camera can be.
+    private float maxDist = 5f; // The furthest away from the player that the camera can be.
     [SerializeField] private float smoothing = 10f;
     private Vector3 dollyDirection;
     private float distance; // calcules the current distance between the player and camera.
